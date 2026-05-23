@@ -366,23 +366,23 @@ export default function PdfCompressor() {
             className={`tab-button ${activeTab === 'compress' ? 'active' : ''}`}
             onClick={() => { setActiveTab('compress'); handleReset(); }}
           >
-            <FileSearch className="btn-icon" style={{ width: 18, height: 18 }} /> Compresor
+            <FileSearch className="btn-icon" style={{ width: 18, height: 18 }} /> Compresión de PDF
           </button>
           <button 
             className={`tab-button ${activeTab === 'ocr' ? 'active' : ''}`}
             onClick={() => { setActiveTab('ocr'); handleReset(); }}
           >
-            <Globe className="btn-icon" style={{ width: 18, height: 18 }} /> PDF a OCR
+            <Globe className="btn-icon" style={{ width: 18, height: 18 }} /> Digitalización OCR
           </button>
         </div>
 
         <h2 className="compressor-title">
-          {activeTab === 'compress' ? 'Compresor PDF Inteligente' : 'PDF a OCR Interactivo'}
+          {activeTab === 'compress' ? 'Optimización de Documentos Jurídicos' : 'Reconocimiento Óptico de Caracteres (OCR)'}
         </h2>
         <p className="compressor-subtitle">
           {activeTab === 'compress' 
-            ? 'Reduce el tamaño de tus archivos PDF por debajo de 450KB con la máxima calidad en tu pantalla.'
-            : 'Convierte imágenes y PDFs escaneados en archivos PDF interactivos con texto seleccionable y búscable.'}
+            ? 'Reduzca el tamaño de sus expedientes y escritos judiciales por debajo de 450KB con máxima fidelidad visual para la presentación de escritos electrónicos.'
+            : 'Digitalice contratos escaneados y probanzas en PDFs interactivos con texto indexable, seleccionable y editable (Ctrl + F).'}
         </p>
 
         {status === 'idle' && !file && (
@@ -403,9 +403,9 @@ export default function PdfCompressor() {
               <FileUp className="dropzone-icon" />
             </div>
             <p className="dropzone-text-primary">
-              {activeTab === 'compress' ? 'Arrastra y suelta tu PDF aquí' : 'Arrastra tu PDF para procesar con OCR'}
+              {activeTab === 'compress' ? 'Arrastre y suelte su expediente PDF aquí' : 'Arrastre su documento PDF aquí para digitalizar con OCR'}
             </p>
-            <p className="dropzone-text-secondary">o haz clic para explorar tus archivos</p>
+            <p className="dropzone-text-secondary">o haga clic para explorar sus archivos locales</p>
           </div>
         )}
 
@@ -421,7 +421,7 @@ export default function PdfCompressor() {
 
             {activeTab === 'ocr' && (
               <div className="ocr-controls">
-                <span className="ocr-select-label">Idioma de reconocimiento</span>
+                <span className="ocr-select-label">Idioma de Reconocimiento de Texto</span>
                 <div className="ocr-select-wrapper">
                   <select 
                     className="ocr-select" 
@@ -436,11 +436,11 @@ export default function PdfCompressor() {
             )}
 
             <div className="action-buttons">
-              <button className="btn-secondary" onClick={handleReset}>Cambiar</button>
+              <button className="btn-secondary" onClick={handleReset}>Reemplazar Archivo</button>
               {activeTab === 'compress' ? (
-                <button className="btn-primary" onClick={handleCompress}>Comprimir Ahora</button>
+                <button className="btn-primary" onClick={handleCompress}>Optimizar Expediente</button>
               ) : (
-                <button className="btn-primary" onClick={handleOcr}>Convertir a PDF OCR</button>
+                <button className="btn-primary" onClick={handleOcr}>Digitalizar Documento</button>
               )}
             </div>
           </div>
@@ -467,7 +467,7 @@ export default function PdfCompressor() {
             
             {activeTab === 'compress' ? (
               <>
-                <h3 className="success-title">¡Compresión Exitosa!</h3>
+                <h3 className="success-title">¡Documento Optimizado con Éxito!</h3>
                 
                 <div className="result-stats">
                   <div className="stat-box">
@@ -483,40 +483,40 @@ export default function PdfCompressor() {
 
                 {savingsPercent > 0 && (
                   <div className="savings-badge">
-                    Ahorraste un <strong>{savingsPercent}%</strong> del espacio original
+                    Se ha reducido un <strong>{savingsPercent}%</strong> del espacio original
                   </div>
                 )}
 
                 {compressedSize <= 460800 ? (
                   <div className="alert-box success">
                     <ShieldCheck className="alert-icon" />
-                    <span>Excelente: El archivo es menor a 450KB. Listo para subir y desplegar de forma ultra rápida.</span>
+                    <span>Apto para Carga: El expediente es menor a 450KB. Está listo para su presentación electrónica oficial sin riesgo de rechazo por peso.</span>
                   </div>
                 ) : (
                   <div className="alert-box warning">
                     <AlertCircle className="alert-icon" />
-                    <span>El archivo final superó los 450KB debido al número de páginas o densidad del documento, pero se redujo al máximo posible.</span>
+                    <span>Aviso Técnico: El archivo final supera los 450KB debido a la gran cantidad de páginas o elementos gráficos, pero se ha reducido al límite de lo técnicamente viable.</span>
                   </div>
                 )}
 
                 <div className="action-buttons">
-                  <button className="btn-secondary" onClick={handleReset}>Comprimir Otro</button>
+                  <button className="btn-secondary" onClick={handleReset}>Optimizar Nuevo Escrito</button>
                   <button className="btn-success" onClick={handleDownload}>
-                    <Download className="btn-icon" /> Descargar PDF
+                    <Download className="btn-icon" /> Descargar PDF Comprimido
                   </button>
                 </div>
               </>
             ) : (
               <>
-                <h3 className="success-title">¡OCR Completado con Éxito!</h3>
+                <h3 className="success-title">¡Digitalización OCR Completada!</h3>
                 
                 <div className="alert-box success">
                   <ShieldCheck className="alert-icon" />
-                  <span>El PDF ha sido digitalizado. Se añadió una capa de texto invisible e interactiva que te permitirá seleccionar, copiar y buscar texto (Ctrl+F).</span>
+                  <span>El documento ha sido digitalizado e indexado. Se ha integrado una capa de texto de alta precisión que permite realizar búsquedas (Ctrl + F), y seleccionar o copiar fragmentos del expediente.</span>
                 </div>
 
                 <div className="action-buttons">
-                  <button className="btn-secondary" onClick={handleReset}>Procesar Otro</button>
+                  <button className="btn-secondary" onClick={handleReset}>Digitalizar Nuevo Escrito</button>
                   <button className="btn-success" onClick={handleDownloadOcrPdf}>
                     <Download className="btn-icon" /> Descargar PDF con OCR
                   </button>
@@ -526,12 +526,12 @@ export default function PdfCompressor() {
                   <div className="extracted-text-section">
                     <div className="extracted-text-header">
                       <span className="extracted-text-title">
-                        <FileText className="btn-icon" style={{ width: 18, height: 18 }} /> Texto Plano Extraído
+                        <FileText className="btn-icon" style={{ width: 18, height: 18 }} /> Texto Jurídico Transcrito
                       </span>
                       <div className="extracted-text-actions">
                         {copySuccess ? (
                           <div className="copy-success-badge">
-                            <CheckCircle className="btn-icon" style={{ width: 14, height: 14 }} /> Copiado
+                            <CheckCircle className="btn-icon" style={{ width: 14, height: 14 }} /> Copiado al Portapapeles
                           </div>
                         ) : (
                           <button 
@@ -544,7 +544,7 @@ export default function PdfCompressor() {
                         )}
                         <button 
                           className="btn-icon-only" 
-                          title="Descargar como .txt"
+                          title="Descargar transcripción como .txt"
                           onClick={handleDownloadTxt}
                         >
                           <Download className="btn-icon" style={{ width: 16, height: 16 }} />
@@ -568,15 +568,15 @@ export default function PdfCompressor() {
             <div className="error-badge-container">
               <AlertCircle className="error-icon" />
             </div>
-            <h3 className="error-title">Error en el Proceso</h3>
+            <h3 className="error-title">Error en el Procesamiento</h3>
             <p className="error-description">{errorMessage}</p>
-            <button className="btn-primary" onClick={handleReset}>Reintentar</button>
+            <button className="btn-primary" onClick={handleReset}>Reintentar Operación</button>
           </div>
         )}
 
         <div className="privacy-footer">
           <ShieldCheck className="privacy-icon" />
-          <span>Seguridad Garantizada: Todo ocurre localmente. Tus PDFs nunca se envían a ningún servidor externo.</span>
+          <span>Garantía de Confidencialidad y Secreto Profesional: Todo el procesamiento se realiza localmente en su terminal. Sus archivos, contratos y expedientes nunca se transmiten a servidores externos.</span>
         </div>
       </div>
     </div>

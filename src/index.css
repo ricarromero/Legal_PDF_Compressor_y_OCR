@@ -1,42 +1,41 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
-
 :root {
-  /* Tema Oscuro (Por defecto) */
-  --bg-primary: #0b0f19;
-  --bg-secondary: #111827;
-  --text-primary: #f9fafb;
-  --text-secondary: #9ca3af;
-  --accent-color: #6366f1;
-  --accent-hover: #4f46e5;
-  --accent-light: rgba(99, 102, 241, 0.15);
-  --border-color: #1f2937;
-  --card-bg: rgba(17, 24, 39, 0.75);
-  --card-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
-  --progress-bg: #1f2937;
+  /* Tema Oscuro (Prestigio Nocturno - Por defecto) */
+  --bg-primary: #0b121f;
+  --bg-secondary: #131c2e;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --accent-color: #c5a880; /* Oro viejo satinado */
+  --accent-hover: #dcc6a2; /* Oro claro */
+  --accent-light: rgba(197, 168, 128, 0.08); /* Acento muy tenue */
+  --border-color: #223147;
+  --card-bg: #131c2e;
+  --card-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+  --progress-bg: #223147;
   --success-color: #10b981;
-  --success-light: rgba(16, 185, 129, 0.15);
-  --error-color: #ef4444;
+  --success-light: rgba(16, 185, 129, 0.12);
+  --error-color: #f43f5e;
   
-  --font-family: 'Outfit', sans-serif;
-  --transition-speed: 0.3s;
+  --font-family: 'Inter', sans-serif;
+  --font-title: 'Playfair Display', serif;
+  --transition-speed: 0.25s;
 }
 
 [data-theme="light"] {
-  /* Tema Claro */
-  --bg-primary: #f3f4f6;
+  /* Tema Claro (Elegante & Impecable) */
+  --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
-  --text-primary: #111827;
-  --text-secondary: #4b5563;
-  --accent-color: #4f46e5;
-  --accent-hover: #4338ca;
-  --accent-light: rgba(79, 70, 229, 0.1);
-  --border-color: #e5e7eb;
-  --card-bg: rgba(255, 255, 255, 0.85);
-  --card-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08);
-  --progress-bg: #e5e7eb;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --accent-color: #1e3a8a; /* Azul real corporativo */
+  --accent-hover: #1e40af; /* Azul real oscuro */
+  --accent-light: rgba(30, 58, 138, 0.06); /* Acento tenue claro */
+  --border-color: #e2e8f0;
+  --card-bg: #ffffff;
+  --card-shadow: 0 20px 30px -10px rgba(15, 23, 42, 0.06);
+  --progress-bg: #e2e8f0;
   --success-color: #059669;
-  --success-light: rgba(5, 150, 105, 0.1);
-  --error-color: #dc2626;
+  --success-light: rgba(5, 150, 105, 0.08);
+  --error-color: #e11d48;
 }
 
 * {
@@ -54,6 +53,8 @@ body {
   flex-direction: column;
   transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
@@ -63,39 +64,39 @@ body {
   flex-direction: column;
 }
 
-/* Efectos de fondo premium */
+/* Efectos de fondo premium discretos */
 .background-glow {
-  position: absolute;
-  width: 500px;
-  height: 500px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, rgba(0, 0, 0, 0) 70%);
-  top: -100px;
-  right: -50px;
-  z-index: -1;
-  pointer-events: none;
-  filter: blur(40px);
-  transition: background var(--transition-speed) ease;
-}
-
-[data-theme="light"] .background-glow {
-  background: radial-gradient(circle, rgba(79, 70, 229, 0.06) 0%, rgba(0, 0, 0, 0) 70%);
-}
-
-.background-glow-left {
   position: absolute;
   width: 600px;
   height: 600px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
-  bottom: -150px;
-  left: -150px;
+  background: radial-gradient(circle, rgba(197, 168, 128, 0.03) 0%, rgba(0, 0, 0, 0) 70%);
+  top: -150px;
+  right: -50px;
   z-index: -1;
   pointer-events: none;
   filter: blur(50px);
   transition: background var(--transition-speed) ease;
 }
 
+[data-theme="light"] .background-glow {
+  background: radial-gradient(circle, rgba(30, 58, 138, 0.03) 0%, rgba(0, 0, 0, 0) 70%);
+}
+
+.background-glow-left {
+  position: absolute;
+  width: 700px;
+  height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(30, 58, 138, 0.02) 0%, rgba(0, 0, 0, 0) 70%);
+  bottom: -200px;
+  left: -200px;
+  z-index: -1;
+  pointer-events: none;
+  filter: blur(60px);
+  transition: background var(--transition-speed) ease;
+}
+
 [data-theme="light"] .background-glow-left {
-  background: radial-gradient(circle, rgba(79, 70, 229, 0.04) 0%, rgba(0, 0, 0, 0) 70%);
+  background: radial-gradient(circle, rgba(30, 58, 138, 0.02) 0%, rgba(0, 0, 0, 0) 70%);
 }

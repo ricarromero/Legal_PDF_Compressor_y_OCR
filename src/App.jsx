@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, Moon, Shield } from 'lucide-react';
+import { Sun, Moon, Scale } from 'lucide-react';
 import PdfCompressor from './components/PdfCompressor';
 import './App.css';
 
@@ -26,9 +26,9 @@ export default function App() {
       <header className="app-header">
         <div className="header-brand">
           <div className="brand-logo-container">
-            <Shield className="brand-logo-icon" />
+            <Scale className="brand-logo-icon" />
           </div>
-          <span className="brand-name">PDF<span className="brand-name-light">Compress</span></span>
+          <span className="brand-name">DocLex <span className="brand-name-light">PDF</span></span>
         </div>
 
         <button 
@@ -50,7 +50,7 @@ export default function App() {
       </main>
 
       <footer className="app-footer">
-        <p>&copy; {new Date().getFullYear()} PDF Compressor. Desarrollado con tecnología de procesamiento 100% privado en cliente.</p>
+        <p>&copy; {new Date().getFullYear()} DocLex PDF — Herramientas Jurídicas. Todo el procesamiento se realiza en local bajo estricto secreto profesional y confidencialidad técnica.</p>
       </footer>
     </div>
   );

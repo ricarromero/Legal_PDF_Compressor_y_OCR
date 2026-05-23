@@ -11,17 +11,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 3rem;
+  padding: 1.25rem 3rem;
   border-bottom: 1px solid var(--border-color);
-  background: rgba(11, 15, 25, 0.2);
+  background: var(--bg-secondary);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   z-index: 10;
   transition: border var(--transition-speed) ease, background var(--transition-speed) ease;
-}
-
-[data-theme="light"] .app-header {
-  background: rgba(243, 244, 246, 0.2);
+  box-shadow: 0 4px 20px -10px rgba(0, 0, 0, 0.05);
 }
 
 .header-brand {
@@ -32,45 +29,55 @@
 
 .brand-logo-container {
   background: var(--accent-light);
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  width: 42px;
+  height: 42px;
+  border-radius: 8px; /* Bordes más sobrios de corte clásico */
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid rgba(99, 102, 241, 0.15);
+  border: 1px solid var(--accent-color);
+  transition: transform 0.3s ease, background-color var(--transition-speed) ease;
+}
+
+.header-brand:hover .brand-logo-container {
+  transform: translateY(-1px);
 }
 
 .brand-logo-icon {
   color: var(--accent-color);
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
 }
 
 .brand-name {
-  font-size: 1.4rem;
+  font-family: var(--font-title); /* Fuente elegante Serif */
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 .brand-name-light {
+  font-family: var(--font-family); /* Fuente normal */
   font-weight: 400;
-  color: var(--text-secondary);
+  font-size: 1.25rem;
+  color: var(--accent-color); /* Color acento para 'PDF' */
+  margin-left: 0.2rem;
+  letter-spacing: 0.05em;
 }
 
 /* Botón de cambio de tema */
 .theme-toggle-btn {
-  background: var(--card-bg);
+  background: var(--bg-primary);
   border: 1px solid var(--border-color);
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+  width: 42px;
+  height: 42px;
+  border-radius: 8px; /* Bordes clásicos */
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
   color: var(--text-primary);
   overflow: hidden;
@@ -79,27 +86,31 @@
 .theme-toggle-btn:hover {
   border-color: var(--accent-color);
   background: var(--accent-light);
-  transform: translateY(-1.5px) scale(1.02);
-  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(197, 168, 128, 0.08);
+}
+
+[data-theme="light"] .theme-toggle-btn:hover {
+  box-shadow: 0 6px 14px rgba(30, 58, 138, 0.05);
 }
 
 .theme-toggle-btn:active {
-  transform: translateY(0) scale(0.98);
+  transform: translateY(0);
 }
 
 .theme-toggle-icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), color var(--transition-speed) ease;
 }
 
 .theme-toggle-btn:hover .theme-toggle-icon.sun {
-  transform: rotate(45deg);
-  color: #fbbf24;
+  transform: rotate(30deg);
+  color: #d97706; /* Dorado cálido */
 }
 
 .theme-toggle-btn:hover .theme-toggle-icon.moon {
-  transform: rotate(-15deg);
+  transform: rotate(-10deg);
   color: var(--accent-color);
 }
 
@@ -114,26 +125,23 @@
 /* Pie de página */
 .app-footer {
   text-align: center;
-  padding: 2rem;
+  padding: 1.5rem 2rem;
   border-top: 1px solid var(--border-color);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 400;
+  line-height: 1.5;
   color: var(--text-secondary);
-  background: rgba(11, 15, 25, 0.1);
-  backdrop-filter: blur(8px);
+  background: var(--bg-secondary);
   z-index: 10;
   transition: border var(--transition-speed) ease, color var(--transition-speed) ease;
 }
 
-[data-theme="light"] .app-footer {
-  background: rgba(243, 244, 246, 0.1);
-}
-
 @media (max-width: 640px) {
   .app-header {
-    padding: 1.25rem 1.5rem;
+    padding: 1rem 1.5rem;
   }
   
   .brand-name {
-    font-size: 1.25rem;
+    font-size: 1.35rem;
   }
 }
