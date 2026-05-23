@@ -330,6 +330,45 @@ export default function PdfCompressor() {
     URL.revokeObjectURL(url);
   };
 
+  const handleDownloadDoc = () => {
+    if (!extractedText) return;
+    
+    // Formato HTML estructurado compatible nativamente con Microsoft Word (MIME compatible)
+    const header = 
+      "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
+      "xmlns:w='urn:schemas-microsoft-com:office:word' " +
+      "xmlns='http://www.w3.org/TR/REC-html40'>" +
+      "<head>" +
+      "<meta charset='utf-8'>" +
+      "<title>Documento Jurídico Transcrito</title>" +
+      "<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->" +
+      "<style>" +
+      "body { font-family: 'Arial', sans-serif; font-size: 11pt; line-height: 1.6; color: #000000; padding: 1in; }" +
+      "p { margin: 0 0 12pt 0; text-align: justify; }" +
+      "</style>" +
+      "</head>" +
+      "<body>";
+    const footer = "</body></html>";
+    
+    // Procesar saltos de línea y envolver en párrafos HTML
+    const formattedText = extractedText
+      .split('\n')
+      .map(paragraph => paragraph.trim() ? `<p>${paragraph}</p>` : '')
+      .join('');
+      
+    const htmlContent = header + formattedText + footer;
+    const blob = new Blob(['\ufeff' + htmlContent], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    const baseName = file.name.replace(/\.pdf$/i, '');
+    link.download = `${baseName}_transcripcion.doc`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   const handleCopyToClipboard = async () => {
     if (!extractedText) return;
     try {
@@ -548,6 +587,14 @@ export default function PdfCompressor() {
                           onClick={handleDownloadTxt}
                         >
                           <Download className="btn-icon" style={{ width: 16, height: 16 }} />
+                        </button>
+                        <button 
+                          className="btn-icon-only" 
+                          title="Descargar transcripción en Word (.doc)"
+                          onClick={handleDownloadDoc}
+                          style={{ borderColor: 'var(--accent-color)', color: 'var(--accent-color)', marginLeft: '0.25rem' }}
+                        >
+                          <FileText className="btn-icon" style={{ width: 16, height: 16 }} />
                         </button>
                       </div>
                     </div>
