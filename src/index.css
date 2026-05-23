@@ -15,8 +15,9 @@
   --success-light: rgba(16, 185, 129, 0.12);
   --error-color: #f43f5e;
   
-  --font-family: 'Inter', sans-serif;
-  --font-title: 'Playfair Display', serif;
+  --font-family: 'Lora', serif;
+  --font-title: 'Cinzel', serif;
+  --font-interface: 'Inter', sans-serif;
   --transition-speed: 0.25s;
 }
 

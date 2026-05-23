@@ -225,7 +225,7 @@
 }
 
 .btn-primary, .btn-secondary, .btn-success {
-  font-family: var(--font-family);
+  font-family: var(--font-interface);
   font-size: 0.95rem;
   font-weight: 600;
   padding: 0.75rem 1.5rem;
@@ -600,7 +600,7 @@
 
 .tab-button {
   flex: 1;
-  font-family: var(--font-family);
+  font-family: var(--font-interface);
   font-size: 0.9rem;
   font-weight: 600;
   padding: 0.65rem 1rem;
@@ -658,7 +658,7 @@
 .ocr-select {
   width: 100%;
   padding: 0.75rem 1.15rem;
-  font-family: var(--font-family);
+  font-family: var(--font-interface);
   font-size: 0.9rem;
   font-weight: 500;
   border-radius: 6px;
@@ -796,4 +796,41 @@
   align-items: center;
   gap: 0.3rem;
   animation: fadeIn 0.2s ease-out;
+}
+
+.btn-word-download {
+  background: var(--accent-color);
+  color: #0b121f;
+  border: none;
+  border-radius: 6px;
+  padding: 0.45rem 0.9rem;
+  font-family: var(--font-interface);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-left: 0.5rem;
+  box-shadow: 0 4px 10px rgba(197, 168, 128, 0.15);
+  transition: all 0.2s ease;
+}
+
+[data-theme="light"] .btn-word-download {
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(30, 58, 138, 0.12);
+}
+
+.btn-word-download:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(197, 168, 128, 0.25);
+}
+
+[data-theme="light"] .btn-word-download:hover {
+  box-shadow: 0 6px 14px rgba(30, 58, 138, 0.2);
+}
+
+.btn-word-download:active {
+  transform: translateY(0);
 }

@@ -589,12 +589,12 @@ export default function PdfCompressor() {
                           <Download className="btn-icon" style={{ width: 16, height: 16 }} />
                         </button>
                         <button 
-                          className="btn-icon-only" 
-                          title="Descargar transcripción en Word (.doc)"
+                          className="btn-word-download" 
+                          title="Exportar transcripción completa a Microsoft Word (.doc)"
                           onClick={handleDownloadDoc}
-                          style={{ borderColor: 'var(--accent-color)', color: 'var(--accent-color)', marginLeft: '0.25rem' }}
                         >
-                          <FileText className="btn-icon" style={{ width: 16, height: 16 }} />
+                          <FileText className="btn-icon" style={{ width: 14, height: 14 }} />
+                          <span>Exportar a Word</span>
                         </button>
                       </div>
                     </div>
