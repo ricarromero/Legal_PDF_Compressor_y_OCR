@@ -92,6 +92,3 @@ La aplicación utiliza un flujo de procesamiento local:
 
 
 
-
-```md
-![Pantalla principal](./public/screenshot.png)
