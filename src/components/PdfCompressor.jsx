@@ -37,43 +37,10 @@ export default function PdfCompressor() {
   const [ocrPdfBlob, setOcrPdfBlob] = useState(null);
   const [copySuccess, setCopySuccess] = useState(false);
 
-  // Novedosas referencias para Spotlight dinámico y consola analítica
-  const cardRef = useRef(null);
+  // Novedosas referencias para consola analítica estática
   const consoleEndRef = useRef(null);
   const fileInputRef = useRef(null);
   const [consoleLogs, setConsoleLogs] = useState([]);
-
-  // Detección y rastreo de movimiento del cursor 60FPS sin re-renderizado
-  const handleMouseMove = (e) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    
-    // Coordenadas para Spotlight
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    cardRef.current.style.setProperty('--mouse-x', `${x}px`);
-    cardRef.current.style.setProperty('--mouse-y', `${y}px`);
-
-    // Inclinación 3D en perspectiva en base al centro de la tarjeta
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    const deltaX = x - centerX;
-    const deltaY = y - centerY;
-    
-    // Rotar máximo 8 grados en cada eje para mantener la elegancia y sutileza
-    const rotateX = -(deltaY / centerY) * 8;
-    const rotateY = (deltaX / centerX) * 8;
-
-    cardRef.current.style.setProperty('--rotate-x', `${rotateX}deg`);
-    cardRef.current.style.setProperty('--rotate-y', `${rotateY}deg`);
-  };
-
-  // Restablecer la rotación suavemente al salir el cursor de la tarjeta
-  const handleMouseLeave = () => {
-    if (!cardRef.current) return;
-    cardRef.current.style.setProperty('--rotate-x', `0deg`);
-    cardRef.current.style.setProperty('--rotate-y', `0deg`);
-  };
 
   const addLog = (msg) => {
     setConsoleLogs(prev => {
@@ -466,13 +433,8 @@ export default function PdfCompressor() {
 
   return (
     <div className="compressor-container">
-      {/* Tarjeta Principal con Spotlight Tracking de Mouse en referencia nativa y restablecimiento MouseLeave */}
-      <div 
-        className="compressor-card"
-        ref={cardRef}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-      >
+      {/* Tarjeta Principal Estática (sin tracking interactivo de coordenadas del mouse) */}
+      <div className="compressor-card">
         {/* Pestañas de navegación superiores */}
         <div className="compressor-tabs">
           <button 
@@ -525,7 +487,7 @@ export default function PdfCompressor() {
         {file && status === 'idle' && (
           <div className="file-info-container">
             <div className="file-detail">
-              {/* Plano técnico Blueprint de folios apilados en perspectiva */}
+              {/* Plano técnico Blueprint estático de folios apilados en perspectiva */}
               <div className="blueprint-visual-container">
                 <div className="blueprint-page page-back">
                   <div className="blueprint-line line-1"></div>

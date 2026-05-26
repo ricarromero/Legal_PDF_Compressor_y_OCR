@@ -23,10 +23,6 @@ export default function App() {
       <div className="background-glow"></div>
       <div className="background-glow-left"></div>
 
-      {/* NOVEDAD 2: Esferas de Cristal 3D Flotante con refracción */}
-      <div className="orb-3d orb-3d-1"></div>
-      <div className="orb-3d orb-3d-2"></div>
-
       <header className="app-header">
         <div className="header-brand">
           <div className="brand-logo-container">

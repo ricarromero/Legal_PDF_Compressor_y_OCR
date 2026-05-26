@@ -8,7 +8,7 @@
   z-index: 1;
 }
 
-/* Tarjeta Principal en Glassmorphic Suspendido con Perspectiva 3D */
+/* Tarjeta Principal en Glassmorphic Suspendido Premium Estático */
 .compressor-card {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
@@ -22,72 +22,29 @@
   -webkit-backdrop-filter: blur(20px);
   position: relative;
   overflow: hidden;
-  /* Soporte de perspectiva y rotación dinámica 3D */
-  transform: perspective(1000px) rotateX(var(--rotate-x, 0deg)) rotateY(var(--rotate-y, 0deg));
-  transition: transform 0.15s cubic-bezier(0.25, 1, 0.5, 1), background var(--transition-speed) ease, border var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+  transition: transform var(--transition-speed) ease, background var(--transition-speed) ease, border var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
 }
 
-/* NOVEDAD 1: Spotlight de borde dinámico interactivo 1px estilo Linear */
+/* Línea de luz superior estática premium */
 .compressor-card::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
-  border-radius: 16px;
-  border: 1.5px solid transparent;
-  /* El degradado radial se posiciona en las coordenadas dinámicas del mouse */
-  background: radial-gradient(
-    180px circle at var(--mouse-x, 0px) var(--mouse-y, 0px),
-    rgba(37, 99, 235, 0.3) 0%,
-    rgba(6, 182, 212, 0.15) 50%,
-    transparent 100%
-  ) border-box;
-  -webkit-mask:
-    linear-gradient(#fff 0 0) padding-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: destination-out;
-  mask-composite: exclude;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
   pointer-events: none;
-  z-index: 3;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-/* Spotlight de brillo interior de fondo */
-.compressor-card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 16px;
-  background: radial-gradient(
-    280px circle at var(--mouse-x, 0px) var(--mouse-y, 0px),
-    rgba(37, 99, 235, 0.04) 0%,
-    rgba(6, 182, 212, 0.02) 60%,
-    transparent 100%
-  );
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-
-.compressor-card:hover::before,
-.compressor-card:hover::after {
-  opacity: 1;
+  z-index: 1;
 }
 
 .compressor-card:hover {
-  transform: perspective(1000px) rotateX(var(--rotate-x, 0deg)) rotateY(var(--rotate-y, 0deg)) scale(1.01);
-  box-shadow: 0 45px 85px -15px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transform: translateY(-3px);
+  box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.07);
 }
 
 [data-theme="light"] .compressor-card:hover {
-  transform: perspective(1000px) rotateX(var(--rotate-x, 0deg)) rotateY(var(--rotate-y, 0deg)) scale(1.01);
+  transform: translateY(-3px);
   box-shadow: 0 35px 60px -15px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
@@ -328,16 +285,14 @@
   margin-top: 2px;
 }
 
-/* Animación en hover del Blueprint */
+/* Visualización estática en hover del Blueprint */
 .file-info-container:hover .page-front {
-  transform: rotateX(30deg) rotateY(-20deg) rotateZ(10deg) translate3d(0, 0, 10px);
   border-color: #06b6d4;
-  box-shadow: 0 8px 25px rgba(6, 182, 212, 0.35);
+  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.25);
 }
 
 .file-info-container:hover .page-back {
-  transform: rotateX(30deg) rotateY(-20deg) rotateZ(10deg) translate3d(-12px, -12px, -15px);
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 /* Información del Archivo */
