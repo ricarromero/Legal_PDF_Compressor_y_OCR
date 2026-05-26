@@ -4,94 +4,122 @@
   flex-direction: column;
   position: relative;
   overflow: hidden;
+  background-color: transparent;
 }
 
-/* Cabecera */
+/* Cabecera Suspension Glassmorphic Estilo Tech */
 .app-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.25rem 3rem;
+  padding: 1.15rem 4rem;
   border-bottom: 1px solid var(--border-color);
-  background: var(--bg-secondary);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(6, 11, 19, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   z-index: 10;
   transition: border var(--transition-speed) ease, background var(--transition-speed) ease;
-  box-shadow: 0 4px 20px -10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="light"] .app-header {
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 10px 30px -15px rgba(15, 23, 42, 0.04);
 }
 
 .header-brand {
   display: flex;
   align-items: center;
   gap: 0.85rem;
+  cursor: pointer;
 }
 
+/* Logo con Gradiente Tecnológico Azul/Cian */
 .brand-logo-container {
-  background: var(--accent-light);
+  background: rgba(37, 99, 235, 0.08);
   width: 42px;
   height: 42px;
-  border-radius: 8px; /* Bordes más sobrios de corte clásico */
+  border-radius: 8px;
   display: flex;
   justify-content: center;
   align-items: center;
   border: 1px solid var(--accent-color);
-  transition: transform 0.3s ease, background-color var(--transition-speed) ease;
+  box-shadow: 0 0 15px rgba(37, 99, 235, 0.15);
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+[data-theme="light"] .brand-logo-container {
+  background: rgba(29, 78, 216, 0.04);
+  box-shadow: 0 0 15px rgba(29, 78, 216, 0.06);
 }
 
 .header-brand:hover .brand-logo-container {
-  transform: translateY(-1px);
+  transform: translateY(-2px) rotate(5deg);
+  box-shadow: 0 0 25px rgba(37, 99, 235, 0.35);
+  border-color: var(--accent-hover);
+  background: rgba(37, 99, 235, 0.15);
 }
 
 .brand-logo-icon {
   color: var(--accent-color);
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
+  transition: color var(--transition-speed) ease;
 }
 
 .brand-name {
-  font-family: var(--font-title); /* Fuente elegante Serif */
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-family: var(--font-title);
+  font-size: 1.45rem;
+  font-weight: 800;
   color: var(--text-primary);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  transition: color var(--transition-speed) ease;
 }
 
 .brand-name-light {
-  font-family: var(--font-family); /* Fuente normal */
+  font-family: var(--font-family);
   font-weight: 400;
   font-size: 1.25rem;
-  color: var(--accent-color); /* Color acento para 'PDF' */
-  margin-left: 0.2rem;
-  letter-spacing: 0.05em;
+  color: #06b6d4; /* Cian brillante para 'PDF' */
+  margin-left: 0.1rem;
+  letter-spacing: 0.02em;
 }
 
-/* Botón de cambio de tema */
+[data-theme="light"] .brand-name-light {
+  color: var(--accent-color);
+}
+
+/* Botón de cambio de tema minimalista */
 .theme-toggle-btn {
-  background: var(--bg-primary);
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--border-color);
   width: 42px;
   height: 42px;
-  border-radius: 8px; /* Bordes clásicos */
+  border-radius: 8px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all var(--transition-speed) cubic-bezier(0.165, 0.84, 0.44, 1);
   color: var(--text-primary);
   overflow: hidden;
+  backdrop-filter: blur(5px);
+}
+
+[data-theme="light"] .theme-toggle-btn {
+  background: rgba(0, 0, 0, 0.01);
 }
 
 .theme-toggle-btn:hover {
   border-color: var(--accent-color);
   background: var(--accent-light);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(197, 168, 128, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -3px rgba(37, 99, 235, 0.2);
 }
 
 [data-theme="light"] .theme-toggle-btn:hover {
-  box-shadow: 0 6px 14px rgba(30, 58, 138, 0.05);
+  box-shadow: 0 8px 20px -3px rgba(29, 78, 216, 0.1);
 }
 
 .theme-toggle-btn:active {
@@ -101,17 +129,17 @@
 .theme-toggle-icon {
   width: 18px;
   height: 18px;
-  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), color var(--transition-speed) ease;
+  transition: transform 0.6s cubic-bezier(0.68, -0.6, 0.27, 1.55), color var(--transition-speed) ease;
 }
 
 .theme-toggle-btn:hover .theme-toggle-icon.sun {
-  transform: rotate(30deg);
-  color: #d97706; /* Dorado cálido */
+  transform: rotate(45deg) scale(1.1);
+  color: #fbbf24;
 }
 
 .theme-toggle-btn:hover .theme-toggle-icon.moon {
-  transform: rotate(-10deg);
-  color: var(--accent-color);
+  transform: rotate(-12deg) scale(1.1);
+  color: #06b6d4;
 }
 
 /* Contenido Principal */
@@ -120,28 +148,42 @@
   display: flex;
   flex-direction: column;
   z-index: 2;
+  position: relative;
 }
 
-/* Pie de página */
+/* Pie de Página Moderno y Técnico */
 .app-footer {
   text-align: center;
-  padding: 1.5rem 2rem;
+  padding: 2rem 4rem;
   border-top: 1px solid var(--border-color);
   font-size: 0.8rem;
-  font-weight: 400;
-  line-height: 1.5;
+  font-weight: 500;
+  line-height: 1.6;
   color: var(--text-secondary);
-  background: var(--bg-secondary);
+  background: rgba(6, 11, 19, 0.35);
+  backdrop-filter: blur(10px);
   z-index: 10;
   transition: border var(--transition-speed) ease, color var(--transition-speed) ease;
 }
 
-@media (max-width: 640px) {
+[data-theme="light"] .app-footer {
+  background: rgba(248, 250, 252, 0.6);
+}
+
+@media (max-width: 768px) {
   .app-header {
-    padding: 1rem 1.5rem;
+    padding: 1rem 2rem;
+  }
+  
+  .app-footer {
+    padding: 1.5rem 2rem;
   }
   
   .brand-name {
-    font-size: 1.35rem;
+    font-size: 1.3rem;
+  }
+  
+  .brand-name-light {
+    font-size: 1.1rem;
   }
 }

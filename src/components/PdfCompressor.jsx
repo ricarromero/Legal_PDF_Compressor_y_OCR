@@ -37,7 +37,55 @@ export default function PdfCompressor() {
   const [ocrPdfBlob, setOcrPdfBlob] = useState(null);
   const [copySuccess, setCopySuccess] = useState(false);
 
+  // Novedosas referencias para Spotlight dinámico y consola analítica
+  const cardRef = useRef(null);
+  const consoleEndRef = useRef(null);
   const fileInputRef = useRef(null);
+  const [consoleLogs, setConsoleLogs] = useState([]);
+
+  // Detección y rastreo de movimiento del cursor 60FPS sin re-renderizado
+  const handleMouseMove = (e) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    
+    // Coordenadas para Spotlight
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    cardRef.current.style.setProperty('--mouse-x', `${x}px`);
+    cardRef.current.style.setProperty('--mouse-y', `${y}px`);
+
+    // Inclinación 3D en perspectiva en base al centro de la tarjeta
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const deltaX = x - centerX;
+    const deltaY = y - centerY;
+    
+    // Rotar máximo 8 grados en cada eje para mantener la elegancia y sutileza
+    const rotateX = -(deltaY / centerY) * 8;
+    const rotateY = (deltaX / centerX) * 8;
+
+    cardRef.current.style.setProperty('--rotate-x', `${rotateX}deg`);
+    cardRef.current.style.setProperty('--rotate-y', `${rotateY}deg`);
+  };
+
+  // Restablecer la rotación suavemente al salir el cursor de la tarjeta
+  const handleMouseLeave = () => {
+    if (!cardRef.current) return;
+    cardRef.current.style.setProperty('--rotate-x', `0deg`);
+    cardRef.current.style.setProperty('--rotate-y', `0deg`);
+  };
+
+  const addLog = (msg) => {
+    setConsoleLogs(prev => {
+      const updated = [...prev, `[${new Date().toLocaleTimeString()}] ${msg}`];
+      setTimeout(() => {
+        if (consoleEndRef.current) {
+          consoleEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 50);
+      return updated;
+    });
+  };
 
   const formatSize = (bytes) => {
     if (bytes === 0) return '0 Bytes';
@@ -84,16 +132,24 @@ export default function PdfCompressor() {
     try {
       setStatus('loading');
       setProgress(0);
+      setConsoleLogs([]);
       setStatusText('Cargando el documento PDF...');
 
+      addLog('SYSTEM: Initializing PDF compression pipeline.');
+      addLog(`PARSER: Loaded file "${file.name}" (${formatSize(file.size)}).`);
+
       const arrayBuffer = await file.arrayBuffer();
+      addLog('PARSER: Successfully parsed binary array buffer.');
+
       const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
       const pdfDoc = await loadingTask.promise;
       const totalPages = pdfDoc.numPages;
+      addLog(`PARSER: PDF Document structure read. Total pages: ${totalPages}.`);
 
       // Presupuesto total conservador para imágenes = 390 KB para garantizar espacio de cabeceras en < 450 KB
       const budgetTotalBytes = 390 * 1024;
       const budgetPerPageBytes = budgetTotalBytes / totalPages;
+      addLog(`OPTIMIZER: Budget allocation calculated (${formatSize(budgetPerPageBytes)} per page).`);
 
       const doc = new jsPDF({
         compress: true,
@@ -104,12 +160,13 @@ export default function PdfCompressor() {
       for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
         setProgress(Math.round(((pageNum - 0.5) / totalPages) * 100));
         setStatusText(`Procesando página ${pageNum} de ${totalPages}...`);
+        addLog(`PAGE-${pageNum}: Fetching vector representation and layout.`);
 
         const page = await pdfDoc.getPage(pageNum);
         
-        // Renderizar a escala 1.5x inicialmente para una legibilidad superior
         let scale = 1.5;
         let viewport = page.getViewport({ scale });
+        addLog(`PAGE-${pageNum}: Rendering vector tree to high-density canvas scale ${scale}x.`);
         
         let canvas = document.createElement('canvas');
         let ctx = canvas.getContext('2d');
@@ -121,45 +178,44 @@ export default function PdfCompressor() {
           viewport: viewport,
         };
         await page.render(renderContext).promise;
+        addLog(`PAGE-${pageNum}: Vector render finished. Canvas viewport: ${canvas.width}x${canvas.height}.`);
 
-        // Algoritmo de compresión iterativo por página
-        let quality = 0.65; // Calidad inicial equilibrada
+        let quality = 0.65;
         let dataUrl = '';
         let sizeInBytes = 0;
         let meetsBudget = false;
 
+        addLog(`PAGE-${pageNum}: Running iterative compression algorithm.`);
         while (!meetsBudget) {
           dataUrl = canvas.toDataURL('image/jpeg', quality);
-          // Estimación del peso base64 (3 bytes de datos por cada 4 caracteres base64)
           const base64Length = dataUrl.length - 'data:image/jpeg;base64,'.length;
           sizeInBytes = base64Length * 0.75;
 
           if (sizeInBytes <= budgetPerPageBytes || quality <= 0.15) {
             meetsBudget = true;
+            addLog(`PAGE-${pageNum}: Target met. Final quality factor: ${quality.toFixed(2)}. Stream weight: ${formatSize(sizeInBytes)}.`);
           } else {
-            quality -= 0.08; // Reducir calidad gradualmente
+            quality -= 0.08;
             
-            // Si la calidad baja de 0.25 y sigue siendo muy pesado, reducimos la escala de renderizado
             if (quality < 0.25 && scale > 1.0) {
               scale = 1.0;
+              addLog(`PAGE-${pageNum}: Size exceedes limits. Rescaling canvas to 1.0x.`);
               viewport = page.getViewport({ scale });
               canvas.width = viewport.width;
               canvas.height = viewport.height;
               ctx = canvas.getContext('2d');
               renderContext = { canvasContext: ctx, viewport: viewport };
               await page.render(renderContext).promise;
-              quality = 0.5; // Reiniciar con calidad moderada en escala reducida
+              quality = 0.5;
             }
           }
         }
 
-        // Agregar página al jsPDF
         const width = viewport.width;
         const height = viewport.height;
         const orientation = width > height ? 'l' : 'p';
 
         if (pageNum === 1) {
-          // Ajustar dimensiones del primer folio
           doc.deletePage(1);
           doc.addPage([width, height], orientation);
         } else {
@@ -167,17 +223,21 @@ export default function PdfCompressor() {
         }
 
         doc.addImage(dataUrl, 'JPEG', 0, 0, width, height, undefined, 'FAST');
+        addLog(`PAGE-${pageNum}: Added compressed stream to final document tree.`);
         setProgress(Math.round((pageNum / totalPages) * 100));
       }
 
       setStatusText('Optimizando estructura final del PDF...');
+      addLog('PDF-WRITER: Compressing streams and generating cross-reference tables.');
       const outputBlob = doc.output('blob');
       
+      addLog('SYSTEM: Compression completed successfully.');
       setCompressedSize(outputBlob.size);
       setCompressedPdfBlob(outputBlob);
       setStatus('success');
     } catch (error) {
       console.error('Error de compresión:', error);
+      addLog(`ERROR: Pipeline failed. ${error.message || error}`);
       setErrorMessage('Ocurrió un error al procesar el PDF. Asegúrate de que no esté protegido con contraseña.');
       setStatus('error');
     }
@@ -190,16 +250,24 @@ export default function PdfCompressor() {
     try {
       setStatus('loading');
       setProgress(0);
+      setConsoleLogs([]);
       setStatusText('Cargando el documento PDF...');
 
+      addLog('SYSTEM: Initializing OCR Processing pipeline.');
+      addLog(`PARSER: Loaded file "${file.name}" (${formatSize(file.size)}).`);
+
       const arrayBuffer = await file.arrayBuffer();
+      addLog('PARSER: Successfully parsed binary array buffer.');
+      
       const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
       const pdfDoc = await loadingTask.promise;
       const totalPages = pdfDoc.numPages;
+      addLog(`PARSER: PDF Document structure read. Total pages: ${totalPages}.`);
 
       setStatusText('Inicializando motor de OCR...');
-      // Creamos el worker asíncrono pasándole el idioma
+      addLog(`OCR: Creating worker for language model "${ocrLanguage}"...`);
       worker = await createWorker(ocrLanguage);
+      addLog('OCR: Worker loaded successfully and neural network initialized.');
 
       const doc = new jsPDF({
         compress: true,
@@ -210,9 +278,9 @@ export default function PdfCompressor() {
       for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
         setProgress(Math.round(((pageNum - 0.7) / totalPages) * 100));
         setStatusText(`Renderizando página ${pageNum} de ${totalPages}...`);
+        addLog(`PAGE-${pageNum}: Rendering vector structure to 1.5x resolution canvas for high precision OCR.`);
 
         const page = await pdfDoc.getPage(pageNum);
-        // Renderizamos a 1.5x de escala para un OCR preciso y una calidad excelente
         const viewport = page.getViewport({ scale: 1.5 });
 
         const canvas = document.createElement('canvas');
@@ -221,16 +289,19 @@ export default function PdfCompressor() {
         canvas.height = viewport.height;
 
         await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+        addLog(`PAGE-${pageNum}: Rendered. Width: ${canvas.width}px, Height: ${canvas.height}px.`);
 
         setProgress(Math.round(((pageNum - 0.4) / totalPages) * 100));
         setStatusText(`Analizando texto (OCR) en página ${pageNum} de ${totalPages}...`);
+        addLog(`PAGE-${pageNum}: Running optical character recognition (OCR) neural layers...`);
 
-        // Ejecutar OCR directamente sobre el canvas
         const { data } = await worker.recognize(canvas);
+        addLog(`PAGE-${pageNum}: OCR extraction successful. Recognized ${data.words ? data.words.length : 0} words.`);
         
         accumulatedText += `--- PÁGINA ${pageNum} ---\n\n${data.text}\n\n`;
 
         setStatusText(`Creando capa interactiva en página ${pageNum} de ${totalPages}...`);
+        addLog(`PAGE-${pageNum}: Overlaying invisible interactive text layer for full text selection.`);
 
         const width = viewport.width;
         const height = viewport.height;
@@ -243,11 +314,9 @@ export default function PdfCompressor() {
           doc.addPage([width, height], orientation);
         }
 
-        // Agregar la imagen renderizada como fondo de la página
         const imageData = canvas.toDataURL('image/jpeg', 0.85);
         doc.addImage(imageData, 'JPEG', 0, 0, width, height, undefined, 'FAST');
 
-        // Superponer capa de texto invisible
         if (data.words && data.words.length > 0) {
           for (const word of data.words) {
             const { text, bbox } = word;
@@ -255,28 +324,28 @@ export default function PdfCompressor() {
 
             const wHeight = bbox.y1 - bbox.y0;
             const x = bbox.x0;
-            const y = bbox.y1; // base de la línea de texto
+            const y = bbox.y1;
 
-            // Escalar tamaño de fuente
             const fontSize = wHeight * 0.85;
             doc.setFontSize(fontSize);
-            
-            // Dibujar el texto en modo invisible en jsPDF (se puede seleccionar y buscar, pero no se dibuja en la pantalla)
             doc.text(text, x, y, { renderingMode: 'invisible' });
           }
         }
-
+        addLog(`PAGE-${pageNum}: Built selectable text layer.`);
         setProgress(Math.round((pageNum / totalPages) * 100));
       }
 
       setStatusText('Guardando documento estructurado...');
+      addLog('PDF-WRITER: Packing OCR-enabled document structure.');
       const outputBlob = doc.output('blob');
       
+      addLog('SYSTEM: OCR Processing pipeline finished successfully.');
       setOcrPdfBlob(outputBlob);
       setExtractedText(accumulatedText);
       setStatus('success');
     } catch (error) {
       console.error('Error en el proceso de OCR:', error);
+      addLog(`ERROR: OCR Pipeline failed. ${error.message || error}`);
       setErrorMessage('Ocurrió un error al procesar el OCR. Asegúrate de tener conexión a Internet para descargar el paquete de idioma y que el PDF no esté protegido.');
       setStatus('error');
     } finally {
@@ -333,14 +402,13 @@ export default function PdfCompressor() {
   const handleDownloadDoc = () => {
     if (!extractedText) return;
     
-    // Formato HTML estructurado compatible nativamente con Microsoft Word (MIME compatible)
     const header = 
       "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
       "xmlns:w='urn:schemas-microsoft-com:office:word' " +
       "xmlns='http://www.w3.org/TR/REC-html40'>" +
       "<head>" +
       "<meta charset='utf-8'>" +
-      "<title>Documento Jurídico Transcrito</title>" +
+      "<title>Documento Transcrito</title>" +
       "<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->" +
       "<style>" +
       "body { font-family: 'Arial', sans-serif; font-size: 11pt; line-height: 1.6; color: #000000; padding: 1in; }" +
@@ -350,7 +418,6 @@ export default function PdfCompressor() {
       "<body>";
     const footer = "</body></html>";
     
-    // Procesar saltos de línea y envolver en párrafos HTML
     const formattedText = extractedText
       .split('\n')
       .map(paragraph => paragraph.trim() ? `<p>${paragraph}</p>` : '')
@@ -390,6 +457,7 @@ export default function PdfCompressor() {
     setOriginalSize(0);
     setCompressedSize(0);
     setCopySuccess(false);
+    setConsoleLogs([]);
   };
 
   const savingsPercent = originalSize > 0 
@@ -398,7 +466,13 @@ export default function PdfCompressor() {
 
   return (
     <div className="compressor-container">
-      <div className="compressor-card">
+      {/* Tarjeta Principal con Spotlight Tracking de Mouse en referencia nativa y restablecimiento MouseLeave */}
+      <div 
+        className="compressor-card"
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      >
         {/* Pestañas de navegación superiores */}
         <div className="compressor-tabs">
           <button 
@@ -416,11 +490,11 @@ export default function PdfCompressor() {
         </div>
 
         <h2 className="compressor-title">
-          {activeTab === 'compress' ? 'Optimización de Documentos Jurídicos' : 'Reconocimiento Óptico de Caracteres (OCR)'}
+          {activeTab === 'compress' ? 'Optimización de Documentos' : 'Reconocimiento de Caracteres (OCR)'}
         </h2>
         <p className="compressor-subtitle">
           {activeTab === 'compress' 
-            ? 'Reduzca el tamaño de sus expedientes y escritos judiciales por debajo de 450KB con máxima fidelidad visual para la presentación de escritos electrónicos.'
+            ? 'Reduzca el tamaño de sus expedientes y escritos PDF por debajo de 450KB con máxima fidelidad visual y de manera 100% local.'
             : 'Digitalice contratos escaneados y probanzas en PDFs interactivos con texto indexable, seleccionable y editable (Ctrl + F).'}
         </p>
 
@@ -451,7 +525,19 @@ export default function PdfCompressor() {
         {file && status === 'idle' && (
           <div className="file-info-container">
             <div className="file-detail">
-              <File className="file-icon" />
+              {/* Plano técnico Blueprint de folios apilados en perspectiva */}
+              <div className="blueprint-visual-container">
+                <div className="blueprint-page page-back">
+                  <div className="blueprint-line line-1"></div>
+                  <div className="blueprint-line line-2"></div>
+                </div>
+                <div className="blueprint-page page-front">
+                  <div className="blueprint-line line-1"></div>
+                  <div className="blueprint-line line-2"></div>
+                  <div className="blueprint-line line-3"></div>
+                  <div className="blueprint-badge">PDF</div>
+                </div>
+              </div>
               <div className="file-meta">
                 <span className="file-name">{file.name}</span>
                 <span className="file-size">{formatSize(originalSize)}</span>
@@ -495,6 +581,25 @@ export default function PdfCompressor() {
               <div className="progress-bar-fill" style={{ width: `${progress}%` }}></div>
             </div>
             <span className="progress-percent">{progress}%</span>
+
+            {/* MONITOR ANALÍTICO EN VIVO (Live Console Monitor) */}
+            <div className="live-console-monitor">
+              <div className="console-header">
+                <span className="console-dot green"></span>
+                <span className="console-dot yellow"></span>
+                <span className="console-dot red"></span>
+                <span className="console-title">Live Pipeline Monitor</span>
+              </div>
+              <div className="console-logs-wrapper">
+                {consoleLogs.map((log, index) => (
+                  <div key={index} className="console-log-line">{log}</div>
+                ))}
+                {consoleLogs.length === 0 && (
+                  <div className="console-log-line blink">[system] STANDBY - PIPELINE IDLE...</div>
+                )}
+                <div ref={consoleEndRef} />
+              </div>
+            </div>
           </div>
         )}
 
@@ -529,17 +634,17 @@ export default function PdfCompressor() {
                 {compressedSize <= 460800 ? (
                   <div className="alert-box success">
                     <ShieldCheck className="alert-icon" />
-                    <span>Apto para Carga: El expediente es menor a 450KB. Está listo para su presentación electrónica oficial sin riesgo de rechazo por peso.</span>
+                    <span>Apto para Carga: El expediente es menor a 450KB. Está listo para su presentación oficial sin riesgo de rechazo por peso.</span>
                   </div>
                 ) : (
                   <div className="alert-box warning">
                     <AlertCircle className="alert-icon" />
-                    <span>Aviso Técnico: El archivo final supera los 450KB debido a la gran cantidad de páginas o elementos gráficos, pero se ha reducido al límite de lo técnicamente viable.</span>
+                    <span>Aviso Técnico: El archivo final supera los 450KB debido a la gran densidad del material gráfico, pero se ha reducido al límite de lo técnicamente viable.</span>
                   </div>
                 )}
 
                 <div className="action-buttons">
-                  <button className="btn-secondary" onClick={handleReset}>Optimizar Nuevo Escrito</button>
+                  <button className="btn-secondary" onClick={handleReset}>Optimizar Nuevo Documento</button>
                   <button className="btn-success" onClick={handleDownload}>
                     <Download className="btn-icon" /> Descargar PDF Comprimido
                   </button>
@@ -551,11 +656,11 @@ export default function PdfCompressor() {
                 
                 <div className="alert-box success">
                   <ShieldCheck className="alert-icon" />
-                  <span>El documento ha sido digitalizado e indexado. Se ha integrado una capa de texto de alta precisión que permite realizar búsquedas (Ctrl + F), y seleccionar o copiar fragmentos del expediente.</span>
+                  <span>El documento ha sido digitalizado e indexado. Se ha integrado una capa de texto de alta precisión que permite realizar búsquedas (Ctrl + F), y seleccionar o copiar fragmentos.</span>
                 </div>
 
                 <div className="action-buttons">
-                  <button className="btn-secondary" onClick={handleReset}>Digitalizar Nuevo Escrito</button>
+                  <button className="btn-secondary" onClick={handleReset}>Digitalizar Nuevo Documento</button>
                   <button className="btn-success" onClick={handleDownloadOcrPdf}>
                     <Download className="btn-icon" /> Descargar PDF con OCR
                   </button>
@@ -565,12 +670,12 @@ export default function PdfCompressor() {
                   <div className="extracted-text-section">
                     <div className="extracted-text-header">
                       <span className="extracted-text-title">
-                        <FileText className="btn-icon" style={{ width: 18, height: 18 }} /> Texto Jurídico Transcrito
+                        <FileText className="btn-icon" style={{ width: 18, height: 18 }} /> Texto Transcrito
                       </span>
                       <div className="extracted-text-actions">
                         {copySuccess ? (
                           <div className="copy-success-badge">
-                            <CheckCircle className="btn-icon" style={{ width: 14, height: 14 }} /> Copiado al Portapapeles
+                            <CheckCircle className="btn-icon" style={{ width: 14, height: 14 }} /> Copiado
                           </div>
                         ) : (
                           <button 
@@ -590,7 +695,7 @@ export default function PdfCompressor() {
                         </button>
                         <button 
                           className="btn-word-download" 
-                          title="Exportar transcripción completa a Microsoft Word (.doc)"
+                          title="Exportar transcripción completa a Word (.doc)"
                           onClick={handleDownloadDoc}
                         >
                           <FileText className="btn-icon" style={{ width: 14, height: 14 }} />
@@ -623,7 +728,7 @@ export default function PdfCompressor() {
 
         <div className="privacy-footer">
           <ShieldCheck className="privacy-icon" />
-          <span>Garantía de Confidencialidad y Secreto Profesional: Todo el procesamiento se realiza localmente en su terminal. Sus archivos, contratos y expedientes nunca se transmiten a servidores externos.</span>
+          <span>Garantía de Confidencialidad: Todo el procesamiento se realiza localmente en su terminal. Sus archivos y documentos nunca se transmiten a servidores externos.</span>
         </div>
       </div>
     </div>
