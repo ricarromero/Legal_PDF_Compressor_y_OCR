@@ -106,4 +106,3 @@ Para lograr reducir documentos PDF por debajo del exigente límite de **450 KB**
 Este proyecto está bajo la Licencia MIT. Siéntete libre de utilizarlo, modificarlo y adaptarlo a tus necesidades o a las de tu estudio jurídico.
 
 ---
-*Desarrollado con ❤️ para simplificar el día a día en la gestión documental judicial.*
