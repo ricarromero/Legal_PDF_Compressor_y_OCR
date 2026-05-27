@@ -8,7 +8,8 @@ Todo esto bajo un modelo de **privacidad absoluta y secreto profesional en modo 
 
 ## 📸 Interfaz de la Aplicación
 
-![Dashboard de PDF Compressor & OCR](./public/screenshot.png)
+![Dashboard de PDF Compressor & OCR](<img width="754" height="749" alt="image" src="https://github.com/user-attachments/assets/36e9eb5e-147b-4422-a5d6-9e3ae5e110ce" />
+)
 
 ---
 
